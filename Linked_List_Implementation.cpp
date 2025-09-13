@@ -1,92 +1,79 @@
 #include <iostream>
 using namespace std;
 
-// Node structure for the linked list
-struct Node {
-    int row, col, value;  // Row, Column, Value of non-zero element
-    Node* next;           // Address of next node
-
-    // Constructor to initialize the node
-    Node(int r, int c, int v) : row(r), col(c), value(v), next(nullptr) {}
+struct Element {
+    int rowIndex, colIndex, data;
+    Element* link;
+    Element(int r, int c, int d) : rowIndex(r), colIndex(c), data(d), link(nullptr) {}
 };
 
-// Linked List class to represent the sparse matrix
-class SparseMatrixLinkedList {
+class SparseMatrixLL {
 private:
-    Node* head;  // Head pointer to the first node in the linked list
+    Element* start;
 
 public:
-    // Constructor to initialize the linked list
-    SparseMatrixLinkedList() : head(nullptr) {}
+    SparseMatrixLL() : start(nullptr) {}
 
-    // Function to insert a non-zero element into the linked list
-    void insert(int row, int col, int value) {
-        Node* newNode = new Node(row, col, value);  // Create a new node
-        if (head == nullptr) {
-            head = newNode;  // If list is empty, set new node as head
+    void addElement(int r, int c, int d) {
+        Element* newElem = new Element(r, c, d);
+        if (!start) {
+            start = newElem;
         } else {
-            Node* temp = head;
-            while (temp->next != nullptr) {  // Traverse to the end of the list
-                temp = temp->next;
-            }
-            temp->next = newNode;  // Link the new node at the end of the list
+            Element* ptr = start;
+            while (ptr->link) ptr = ptr->link;
+            ptr->link = newElem;
         }
     }
 
-    // Function to display the linked list along with the node addresses
-    void display() {
-        if (head == nullptr) {
-            cout << "The matrix has no non-zero elements." << endl;
+    void showElements() {
+        if (start == nullptr) {
+            cout << "Matrix contains no non-zero values." << endl;
             return;
         }
 
-        Node* temp = head;
-        while (temp != nullptr) {
-            // Display the row, column, value, and the address of the next node
-            cout << "Row: " << temp->row
-                 << ", Column: " << temp->col
-                 << ", Value: " << temp->value
-                 << ", Next Node Address: " << temp->next << endl;
-            temp = temp->next;  // Move to the next node
+        Element* ptr = start;
+        while (ptr != nullptr) {
+            cout << "Row: " << ptr->rowIndex
+                 << ", Column: " << ptr->colIndex
+                 << ", Data: " << ptr->data
+                 << ", Next: " << ptr->link << endl;
+            ptr = ptr->link;
         }
     }
 
-    // Destructor to free the memory used by the linked list
-    ~SparseMatrixLinkedList() {
-        Node* temp;
-        while (head != nullptr) {
-            temp = head;
-            head = head->next;
-            delete temp;
+    ~SparseMatrixLL() {
+        Element* ptr;
+        while (start != nullptr) {
+            ptr = start;
+            start = start->link;
+            delete ptr;
         }
     }
 };
 
-// Main function to handle user input and create the sparse matrix
 int main() {
-    int rows, cols, value;
+    int totalRows, totalCols, entry;
 
-    SparseMatrixLinkedList sparseMatrix;
+    SparseMatrixLL matrix;
 
-    cout << "Enter the number of rows: ";
-    cin >> rows;
-    cout << "Enter the number of columns: ";
-    cin >> cols;
+    cout << "Enter number of rows: ";
+    cin >> totalRows;
+    cout << "Enter number of columns: ";
+    cin >> totalCols;
 
-    cout << "Enter the elements of the matrix (0 for empty):\n";
-    
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            cout << "Element at Row " << i << ", Column " << j << ": ";
-            cin >> value;
-            if (value != 0) {
-                sparseMatrix.insert(i, j, value);  // Insert non-zero value into the linked list
+    cout << "Enter matrix values (0 for empty):\n";
+    for (int r = 0; r < totalRows; ++r) {
+        for (int c = 0; c < totalCols; ++c) {
+            cout << "Value at (" << r << "," << c << "): ";
+            cin >> entry;
+            if (entry != 0) {
+                matrix.addElement(r, c, entry);
             }
         }
     }
 
     cout << "\nSparse Matrix Linked List Representation:\n";
-    sparseMatrix.display();  // Display the linked list representation of the sparse matrix
+    matrix.showElements();
 
     return 0;
 }
